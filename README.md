@@ -8,25 +8,27 @@ This project evaluates an e-commerce customer support routing agent. Given a sup
 - `account_help`
 - `other`
 
-The repository includes an executed evaluation notebook, the human-review workbook, exported results, and a short guide to the OpenTelemetry integration.
+The repository includes the evaluation notebook, the human-review workbook, exported results, a Word project report, and a short guide to the OpenTelemetry integration.
 
 ## Repository Contents
 
 | File | Description |
 | --- | --- |
-| [`week4_customer_support_evals.ipynb`](week4_customer_support_evals.ipynb) | Executed notebook containing the classifier, evaluation workflow, prompt revision, results, and trace instrumentation. |
+| [`week4_customer_support_evals.ipynb`](week4_customer_support_evals.ipynb) | Notebook containing the classifier, evaluation workflow, focused prompt revision, and trace instrumentation. |
 | [`Week 4_ AI Evals (E-Commerce Customer Support Agent).xlsx`](Week%204_%20AI%20Evals%20%28E-Commerce%20Customer%20Support%20Agent%29.xlsx) | Evaluation workbook for reviewing failures, grouping error patterns, revising prompts, and optionally aligning an LLM judge. |
 | [`results_v1.csv`](results_v1.csv) | Baseline predictions and evaluation results. |
 | [`results_v2.csv`](results_v2.csv) | Improved-prompt predictions and evaluation results. |
 | [`docs/opentelemetry_integration_one_pager.md`](docs/opentelemetry_integration_one_pager.md) | Overview of the OpenTelemetry and LangSmith tracing setup. |
+| [`docs/Customer_Support_Agent_Evaluation_Project_Documentation.docx`](docs/Customer_Support_Agent_Evaluation_Project_Documentation.docx) | Consolidated Word report covering the implementation, troubleshooting, results, observability, and handoff status. |
+| [`docs/generate_project_documentation.py`](docs/generate_project_documentation.py) | Rebuilds the Word report from the latest exported evaluation artifacts. |
 
 ## Results
 
 | Run | Accuracy | Correct predictions |
 | --- | ---: | ---: |
-| Baseline prompt | 92% | 92 / 100 |
-| Improved prompt | 97% | 97 / 100 |
-| Change | +5 percentage points | +5 |
+| Baseline prompt | 91% | 91 / 100 |
+| Improved prompt | 99% | 99 / 100 |
+| Change | +8 percentage points | +8 |
 
 The revised prompt improved routing accuracy while preserving the individual prediction records needed for failure analysis.
 
@@ -48,32 +50,35 @@ See [`docs/opentelemetry_integration_one_pager.md`](docs/opentelemetry_integrati
 
 ## Run the Notebook
 
-Create a virtual environment and install the dependencies:
+Create a 64-bit virtual environment and install the dependencies. On Windows PowerShell:
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install jupyter langgraph "langsmith[otel]>=0.4.25" langchain-openai langchain-core pandas scikit-learn pydantic tqdm opentelemetry-sdk opentelemetry-exporter-otlp
+```powershell
+python -m venv .venv-x64
+.\.venv-x64\Scripts\Activate.ps1
+python -m pip install jupyter langgraph "langsmith[otel]>=0.4.25" langchain-openai langchain-core pandas scikit-learn pydantic tqdm python-dotenv opentelemetry-sdk opentelemetry-exporter-otlp python-docx
 ```
 
-Set your API keys and tracing configuration locally:
+Create a local `.env` file containing the API keys and tracing configuration:
 
-```bash
-export OPENAI_API_KEY="your-openai-key"
-export LANGSMITH_API_KEY="your-langsmith-key"
-export LANGSMITH_TRACING=true
-export LANGSMITH_PROJECT=customer-support-evals
-export LANGSMITH_ENDPOINT=https://api.smith.langchain.com
-export LANGSMITH_OTEL_ENABLED=true
+```dotenv
+OPENAI_API_KEY="your-openai-key"
+LANGSMITH_API_KEY="your-langsmith-key"
+LANGSMITH_TRACING=true
+LANGSMITH_PROJECT=CustomerAgentEvaluationAndLLM-As-Judge
+LANGSMITH_ENDPOINT=https://api.smith.langchain.com
+LANGSMITH_OTEL_ENABLED=true
+OTEL_EXPORTER_OTLP_ENDPOINT=https://api.smith.langchain.com/otel/v1/traces
+OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=https://api.smith.langchain.com/otel/v1/traces
+OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
 ```
 
 Then launch the notebook:
 
 ```bash
-jupyter notebook week4_customer_support_evals.ipynb
+python -m jupyter notebook week4_customer_support_evals.ipynb
 ```
 
-Do not commit API keys, `.env` files, or other secrets.
+The notebook loads `.env` with `override=True`, so restart the kernel before a clean run. Do not commit API keys, `.env` files, or other secrets.
 
 ## References
 
